@@ -187,9 +187,55 @@ void lpf_del(ListPacketFrag ** lpf, ListPacketFrag * cellule);
 
 
 \subsubsection{packet}
+\texttt{Packet} est un module contenant la structure qui représentera à nos yeux une trame définie comme ci dessous:
+\begin{minted}[linenos,tabsize=4]{c}
+ struct Packet {
+  unsigned int label;
+  unsigned char priority;
+  unsigned int size;
+  unsigned char * charge;
+};
+typedef struct Packet Packet;
+\end{minted}
+Ce modules est aussi chargé de l'assemblage et de la re-fragmentation du paquet en de multiple trames via les deux fonctions qui suivent :
+\begin{minted}[linenos,tabsize=4]{c}
+/* Assembler un packet */
+void packet_assemble(Packet * packet, PacketFrag * pf);
+/* Fragmenter un packet */
+void packet_split(PacketFrag ** pf, Packet * packet, int outputsize);
+\end{minted}
+
+
 
 
 \subsubsection{commut}
+\texttt{commut} est le module qui gère la table de commutation de notre appareil. Cette dernière est définie ainsi :
+\begin{minted}{c}
+ /* Liste chaîné des règles de commutation */
+struct ListRule {
+    unsigned int inlabel;
+    unsigned int outlabel;
+    int outlink;
+    struct ListRule * next;
+};
+typedef struct ListRule ListRule;
+\end{minted}
+Pour charger la table de commutation, nous utiliserons :
+\begin{minted}{c}
+ /* Charger les règles de routage depuis un fichier */
+int commut_load(ListRule ** rules, char * inputfile);
+\end{minted}
+Puis, la fonction :
+\begin{minted}{c}
+ /* Commuter un packet.
+ * Change le label et renvoit le lien de sortie.
+ * Renvoit -1 si le packet n'est concerné par aucune règle. */
+int commut(Packet * packet, ListRule * rules);
+\end{minted}
+Qui elle, renvoie le lien de sortie et modifie le label du paquet.
+
+
+
 
 \subsubsection{queue}
 \texttt{Queue} est un module gérant les files d'attentes avec gestion
@@ -214,17 +260,23 @@ struct WRRS {
 };
 typedef struct WRRS WRRS;
 \end{minted}
-Les variables \texttt{priorité} et \texttt{credit} dans le WRRS
-contiennent les informations nécessaire à l'application de l'algorithme
-de décision lors de la sortie d'une trame. la dernière priorité envoyée pour reprise.
-
+L'ajout de trame se fait par le biais de la fonction de la fonction
+\texttt{wrrs\_trame}.
 \begin{minted}{c}
 /* Ajouter une trame dans le serveur */
 void wrrs_push(WRRS * server, unsigned short int priority, Trame * trame);
+\end{minted}
+Les variables \texttt{priorité} et \texttt{credit} dans le WRRS
+contiennent les informations nécessaire à l'application de l'algorithme
+de décision lors de la sortie d'une trame. Celui-ci est déclanché par
+l'appel de la fonction \texttt{wrrs\_pop} dont voici le prototype :
+\begin{minted}{c}
 /* Obtenir la prochaine trame devant sortir du serveur.
  * Retourne NULL si le server est vide. */
 Trame * wrrs_pop(WRRS * server);
 \end{minted}
+
+
 \subsubsection{simulator}
 \texttt{simulator} est le module qui appelle tous les autres modules précédemment énoncés. Il est appelé par le main et coordonne toutes les fonctions qui assureront le bon  
 \subsubsection{main}
