@@ -70,13 +70,13 @@ Enfin, il faut remarquer que notre application est vouée à évoluer : il sera
 \section{Implémentation}
 \subsection{Architecture globale de l'application}
 
-A la vue des fonctionnalités énoncées ci-dessus, notre solution a été conçue pour être évolutive (car décomposée en modules distinct) et stable. L'application exécutable se décompose en modules fonctionnels explicités par le schéma ci-dessous :
-
-Notre application ayant attrait au réseau, il est naturel de la décomposer en module indépendant à l'image des couches du modèle OSI.
+Notre application ayant attrait au réseau, il est naturel de la décomposer en module indépendant à l'image des couches du modèle OSI. De plus, une telle décomposition rend notre solution évolutive. Il sera aisé de remplacer un module ou d'en ajouter. Sa décomposition en module assure aussi sa stabilité.
 
 Le simulateur est lancé par la méthode \texttt{simulate} du module \texttt{simulator}. Les paramètres de lancement sont obtenue par le module \texttt{main}, en charge d'analyser les arguments de la ligne de commande. La simulation est commandé par le fichier d'entrée, comportant des instructions \texttt{IN} et des instruction \texttt{out}, dictant l'entrée ou la sortie d'un packet.
 
-Lors de la lecture d'une instruction \texttt{IN}, le module \texttt{trame} sera appelé afin de lire une trame depuis le fichier d'entrée. Celle-ci est alors rangée dans une structure de données nommé \texttt{ListPacketFrag}, en attandant d'obtenir toute les trames d'un même packet.
+Lors de la lecture d'une instruction \texttt{IN}, le module \texttt{trame} sera appelé afin de lire une trame depuis le fichier d'entrée. Celle-ci est alors rangée dans une structure de données nommé \texttt{ListPacketFrag}, en attendant d'obtenir toute les trames d'un même packet.
+
+Ensuite, lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d'envoyer une trame sur le lien de sortie concernée et donc de l'écrire dans un fichier de sortie. La trame sortie est sélectionnée selon sa priorité de manière circulaire sauf la priorité absolue, qui elle, est envoyée immédiatement après un \texttt{OUT}.
 
 \includegraphics{s1.png}
 
