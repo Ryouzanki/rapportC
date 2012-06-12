@@ -87,40 +87,77 @@ Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d
 \subsubsection{trame}
 Le module \texttt{trame} propose une fonction de décodage dont le prototype est le suivant :
 \begin{minted}{c}
-
+int trame_decode(Trame * t, FILE * stream);
 \end{minted}
-\begin{minted}[linenos,tabsize=4]{c}
+Son objectif est le décodage d'une trame depuis le fichier \texttt{stream} afin de remplir la structure suivante :
+\begin{minted}[linenos]{c}
 typedef struct {
-  unsigned short int id; /* numéro du paquet */
-  unsigned short int seqf; /* numéro de séquence */
-  unsigned short int nbf; /* nombre de séquence */
-  unsigned int length; /* longeur de charge */
-  unsigned char * charge; /* contenue */
+    unsigned short int id; /* numéro du paquet */
+    unsigned short int seqf; /* numéro de séquence */
+    unsigned short int nbf; /* nombre de séquence */
+    unsigned int length; /* longeur de charge */
+    unsigned char * charge; /* contenue */
 } Trame;
 \end{minted}
-Le décodage se fait en telles étapes :
-\begin{enumerate}
- \item initialiser une variable de crc afin d'effectuer le contrôle d'erreur
- \item abandonner toutes les informations redondantes avant que l'on rencontre un fanion afin d'assurer le départ du décodage.
- \item Pour chaque octet utile reçu, faire l'opération \textit{ou exclusif} avec l'ancien crc pour générer le nouveau crc.
- \item Pour transformer les octets en attributs d'une trame, on décale le premier octet à gauche de 8 bits et l'opération \textit{ou} avec le deuxième octet afin de construire les attributs de 16 bits.
- \item Lors que l'on rencontre un banaliseur, on récupère l'octet suivant.
- \item Lors que l'on rencontre un fanion, la lecture de la séquence de bits est terminée et on récupère le dernier élément dans partie de charges comme le crc original.
- \item Refaire l'opération \textit{ou exclusif} entre crc calculé et le crc original, afin d'obtenir un crc pour la trame sauf les fanion et le crc original.
- \item Faire la comparaison entre le crc calculé et le crc original, s'ils sont identiques, la trame est reçue correctement, sinon, on ignore cette trame et elle est détruite.
-\end{enumerate}
+Cette fonction a été implémenté sous la forme d'une machine à état afin
+de suivre l'avancement dans la lecture. L'état $9$ désigne la lecture du
+fanion de fin de trame, tandis qu'un état négatif désigne la détection
+d'une erreur.
+\begin{minted}[linenos]{c}
+while (state < 9 && state > -1) {
+    pending = fgetc(stream); /* Lecture d'un caractère */
+    if (pending == EOF) { /* On contrôle qu'il n'y ai pas eu d'erreur */
+        fprintf(stderr, "trame_decode: error in fgetc\n");
+        state = -1; 
+    } else {
+        switch (state) {
+            // Action suivant l'état
+        }
+    }
+}
+\end{minted}
+Tout au long du décodage, la CRC est calculé en effectuant un ou exclusif
+avec l'octet qui vient d'être lu. Si la CRC lu dans la trame n'est pas
+identique, la trame est ignoré.
+\begin{minted}{c}
+crc ^= pending;
+\end{minted}
+
+%~ Le décodage se fait en telles étapes :
+%~ \begin{enumerate}
+ %~ \item initialiser une variable de crc afin d'effectuer le contrôle d'erreur
+ %~ \item abandonner toutes les informations redondantes avant que l'on rencontre un fanion afin d'assurer le départ du décodage.
+ %~ \item Pour chaque octet utile reçu, faire l'opération \textit{ou exclusif} avec l'ancien crc pour générer le nouveau crc.
+ %~ \item Pour transformer les octets en attributs d'une trame, on décale le premier octet à gauche de 8 bits et l'opération \textit{ou} avec le deuxième octet afin de construire les attributs de 16 bits.
+ %~ \item Lors que l'on rencontre un banaliseur, on récupère l'octet suivant.
+ %~ \item Lors que l'on rencontre un fanion, la lecture de la séquence de bits est terminée et on récupère le dernier élément dans partie de charges comme le crc original.
+ %~ \item Refaire l'opération \textit{ou exclusif} entre crc calculé et le crc original, afin d'obtenir un crc pour la trame sauf les fanion et le crc original.
+ %~ \item Faire la comparaison entre le crc calculé et le crc original, s'ils sont identiques, la trame est reçue correctement, sinon, on ignore cette trame et elle est détruite.
+%~ \end{enumerate}
+
+Inversement, ce module propose une fonction d'encodage, servant cette
+fois-ci à écrire les données contenue dans la structure \texttt{Trame}
+dans un fichier. Voici son prototype :
+\begin{minted}{c}
+int trame_encode(FILE * stream, Trame * t);
+\end{minted}
+
+
 \subsubsection{packetfrag}
 \texttt{packetfrag} correspond à un module gérant les fragments de paquets, ou les trames d'un même paquet. Un packetfrag contient, comme ci dessous, une trame ainsi que la taille du paquet auquel elle appartient :\begin{minted}{c}
 struct PacketFrag {
     // Nombre de fragment (taille du tableau)
     int size;
     // Tableau contenant les trames
-    Trame ** trames;
+       Trame ** trames;
 };
 typedef struct PacketFrag PacketFrag;
 \end{minted}
+
+
 \subsubsection{listpacketfrag}
-\texttt{listepacketfrag} est un module qui définit la structure des maillons de la liste chainé qui contient les fragments de paquet. 
+\texttt{listepacketfrag} est un module qui définit la structure des
+maillons de la liste chainé qui contient les fragments de paquet.
 \begin{minted}[linenos,tabsize=4]{c}
  struct ListPacketFrag {
     // Nombre de trame stocké dans le packet fragmenté
@@ -134,55 +171,29 @@ typedef struct PacketFrag PacketFrag;
 };
 typedef struct ListPacketFrag ListPacketFrag;
 \end{minted}
-\texttt{listepacketfrag} contient l'ID du paquet associé afin de savoir si une trame appartient au paquet concerné ou non. Elle contient aussi un compteur qui permet de savoir si le paquet est complet dans la mesure où toutes les trames attendues sont arrivées.
+\texttt{listepacketfrag} contient l'ID du paquet associé afin de savoir
+si une trame appartient au paquet concerné ou non. Elle contient aussi
+un compteur qui permet de savoir lorsque toute les trames d'un paquet
+sont arrivées dès que celui-ci atteint le nombre de séquence.
+
+Cette liste chaîné est utilisé afin de stoquer les paquets fragmentés
+avant leur assemblage. Il propose donc des fonctions d'ajout de trame,
+et de retrait de paquet fragmenté (lorsque le paquet est assemblé) dont
+les prototypes sont les suivants :
+\begin{minted}[linenos,tabsize=4]{c}
+ListPacketFrag * lpf_add(ListPacketFrag ** lpf, Trame * t);
+void lpf_del(ListPacketFrag ** lpf, ListPacketFrag * cellule);
+\end{minted}
+
+
 \subsubsection{packet}
-\texttt{Packet} est un module contenant la structure qui représentera à nos yeux une trame définie comme ci dessous:
-\begin{minted}[linenos,tabsize=4]{c}
- struct Packet {
-  unsigned int label;
-  unsigned char priority;
-  unsigned int size;
-  unsigned char * charge;
-};
 
-typedef struct Packet Packet;
-\end{minted}
-Ce modules est aussi chargé de l'assemblage et de la re-fragmentation du paquet en de multiple trames via les deux fonctions qui suivent :
-\begin{minted}[linenos,tabsize=4]{c}
-/* Assembler un packet */
-void packet_assemble(Packet * packet, PacketFrag * pf);
 
-/* Fragmenter un packet */
-void packet_split(PacketFrag ** pf, Packet * packet, int outputsize);
-\end{minted}
 \subsubsection{commut}
-\texttt{commut} est le module qui gère la table de commutation de notre appareil. Cette dernière est définie ainsi :
-\begin{minted}{c}
- /* Liste chaîné des règles de commutation */
-struct ListRule {
-    unsigned int inlabel;
-    unsigned int outlabel;
-    int outlink;
-    struct ListRule * next;
-};
 
-typedef struct ListRule ListRule;
-\end{minted}
-Pour charger la table de commutation, nous utiliserons :
-\begin{minted}{c}
- /* Charger les règles de routage depuis un fichier */
-int commut_load(ListRule ** rules, char * inputfile);
-\end{minted}
-Puis, la fonction :
-\begin{minted}{c}
- /* Commuter un packet.
- * Change le label et renvoit le lien de sortie.
- * Renvoit -1 si le packet n'est concerné par aucune règle. */
-int commut(Packet * packet, ListRule * rules);
-\end{minted}
-Qui elle, renvoie le lien de sortie et modifie le label du paquet.
 \subsubsection{queue}
-\texttt{Queue} est un module gérant les files d'attente ainsi que les 256 priorités. Une queue est une structure comportant un pointeur vers une autre queue comme ci dessous :
+\texttt{Queue} est un module gérant les files d'attentes avec gestion
+des priorité. Une queue est une liste chaîné de trames :
 \begin{minted}{c}
  struct Queue {
     struct Queue * previous;
@@ -190,7 +201,10 @@ Qui elle, renvoie le lien de sortie et modifie le label du paquet.
 };
 typedef struct Queue Queue;
 \end{minted}
-Chaque queue sera attribuée à une priorité et contiendra une liste chaînée de Trame. Les 256 queues des 256 priorités sont stockées dans un tableau de 256 queue dont l'indice représente la priorité. Zéro étant la plus forte priorité. Ce tableau est contenu dans une structure WRRS ci dessous :
+Chaque queue sera attribuée à une priorité. Dans notre cas, 256 prioritées
+sont géré, et chaque queue associé est stoqué dans une cellule d'un
+tableau de 256 queues, l'indice représentant la priorité.
+Ce tableau est contenu dans une structure WRRS ci dessous :
 \begin{minted}{c}
  /* Weighted Rount Robin Server */
 struct WRRS {
@@ -200,11 +214,13 @@ struct WRRS {
 };
 typedef struct WRRS WRRS;
 \end{minted}
-La variable priorité dans le WRRS contient la dernière priorité envoyée pour reprise. Ce module propose aussi des fonctions permettant d'ajouter une trame en fonction de sa priorité mais aussi d'en sortir une en fonction de la priorité absolue et de la dernière priorité. Ces fonctions sont :
+Les variables \texttt{priorité} et \texttt{credit} dans le WRRS
+contiennent les informations nécessaire à l'application de l'algorithme
+de décision lors de la sortie d'une trame. la dernière priorité envoyée pour reprise.
+
 \begin{minted}{c}
 /* Ajouter une trame dans le serveur */
 void wrrs_push(WRRS * server, unsigned short int priority, Trame * trame);
-
 /* Obtenir la prochaine trame devant sortir du serveur.
  * Retourne NULL si le server est vide. */
 Trame * wrrs_pop(WRRS * server);
@@ -291,6 +307,16 @@ De plus, ce projet nous a permis de nous familiariser avec la démarche de créa
 
 La partie que nous avons développée correspond aux objectifs de départ. Les résultats de simulation sont tout à fait satisfaisants tant au niveau routage qu’au niveau gestion de la mémoire. Savoir faire des simulation et le faire tout le long du projet est un outil précieux afin de corriger les erreurs le plus vite possible avant que celles-ci ne se répercutent sur la suite.
 
-Le projet que nous avons réalisé cette année peut encore évoluer. En effet, il subsiste un problème lorsqu'une trame arrive puis une des trames du même paquets n'arrive pas. La trame est gardée. Nous pourrions ajouter un compte à rebours qui détruit la trame si une autre trame du même paquet n'arrive pas.
+Le projet que nous avons réalisé cette année peut encore évoluer.
+En effet, la gestion des trames perdu ou erroné est très limité.
+Il pourrait être envisagé d'étendre le protocole afin de permettre de la
+reprise sur erreur. Par exemple, nous pourrions rajouter un compte à
+rebours qui détruit la trame si aucune autre trame du même paquet 
+n'arrive dans un délai impartit. Ceci permet de recevoir un paquet de
+même ID qui arriverait plus tard. Une autre voie d'évolution est la
+gestion de plusieurs liens entrant, avec éventuellement une table de
+commutation qui en tient compte. Il serait également intéressant de
+passer à une version asynchrone permettant la reception et l'émission de
+trame simultanément.
 
 \end{document}
