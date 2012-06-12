@@ -85,7 +85,17 @@ Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d
 \subsection{Détail des types et sous programmes}
 
 \subsubsection{trame}
-
+Le décodage se fait en telles étapes :
+\begin{enumerate}
+ \item initialiser une variable de crc afin d'effectuer le contrôle d'erreur
+ \item abandonner toutes les informations redondantes avant que l'on rencontre un fanion afin d'assurer le départ du décodage.
+ \item Pour chaque octet utile reçu, faire l'opération \textit{ou exclusif} avec l'ancien crc pour générer le nouveau crc.
+ \item Pour transformer les octets en attributs d'une trame, on décale le premier octet à gauche de 8 bits et l'opération \textit{ou} avec le deuxième octet afin de construire les attributs de 16 bits.
+ \item Lors que l'on rencontre un banaliseur, on récupère l'octet suivant.
+ \item Lors que l'on rencontre un fanion, la lecture de la séquence de bits est terminée et on récupère le dernier élément dans partie de charges comme le crc original.
+ \item Refaire l'opération \textit{ou exclusif} entre crc calculé et le crc original, afin d'obtenir un crc pour la trame sauf les fanion et le crc original.
+ \item Faire la comparaison entre le crc calculé et le crc original, s'ils sont identiques, la trame est reçue correctement, sinon, on ignore cette trame et elle est détruite.
+\end{enumerate}
 \subsubsection{packetfrag}
 
 \subsubsection{listpacketfrag}
