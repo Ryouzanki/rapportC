@@ -54,13 +54,13 @@ et des améliorations qui pourraient y être apportées.
 
 Dans le cadre de notre préparation au diplôme d'ingénieur en
 Télécommunications et Réseaux, nous avons été amenés à effectuer notre
-projet de première année sous l'encadrement de Jérôme Ermont. Le but de
+projet C de première année sous l'encadrement de Jérôme Ermont. Le but de
 ce projet était surtout de nous faire manipuler le langage C et la
 gestion de la mémoire mais il nous a également permis de modéliser une
 solution réseau simple.
 
 La commutation de paquets, technique utilisée dans le transfert de
-données dans les réseaux informatiques, permet de rediriger les packets
+données dans les réseaux informatiques, permet de rediriger les paquets
 sur un lien physique particulier suivant des critères précis, avec
 éventuellement une modification de ceux-ci. Au vue de notre formation,
 le choix de la réalisation d'un simulateur de commutateur se trouve être
@@ -77,7 +77,7 @@ Nous avons effectué notre projet langage C de première année sous
 l'encadrement de Jérôme Ermont. Il était question principalement de
 simuler le fonctionnement d'un commutateur de niveau 3. 
 
-Ainsi il s'agissait dans ce projet de simuler le travail d'un élément
+Ainsi il s'agissait dans ce projet de simuler le fonctionnement d'un élément
 réseau dont le rôle serait de recevoir des trames, de les assembler pour
 reformer des paquets et d'effectuer par la suite la commutation de ces
 paquets. Les paquets routés sont à nouveau fragmentés et les trames
@@ -91,10 +91,10 @@ algorithme.
 Dans un second temps, après nous être mis d'accord sur le modèle retenu
 nous nous sommes départagé le travail afin de gagner du temps.  
 
-Nous avons ensuite regroupé notre travail et avons modifié la structure
-générale afin de l'optimiser au maximum. 
+Nous avons ensuite regroupé nos travaux et avons modifié la structure
+générale du programme afin de l'optimiser au maximum. 
 
-Enfin, il faut remarquer que notre application est vouée à évoluer : il
+Enfin, il faut remarquer que notre application peut encore évoluer : il
 serait par exemple souhaitable que le commutateur soit capable de mieux
 traiter les erreur (reprise sur erreur, renvoie...).
 
@@ -102,7 +102,7 @@ traiter les erreur (reprise sur erreur, renvoie...).
 \subsection{Architecture globale de l'application}
 
 Notre application ayant attrait au réseau, il est naturel de la
-décomposer en module indépendant à l'image des couches du modèle OSI. De
+décomposer en modules indépendants, à l'image des couches du modèle OSI. De
 plus, une telle décomposition rend notre solution évolutive. Il sera
 aisé de remplacer un module ou d'en ajouter. Sa décomposition en module
 assure aussi sa stabilité.
@@ -110,18 +110,18 @@ assure aussi sa stabilité.
 Le simulateur est lancé par la méthode \texttt{simulate} du module
 \texttt{simulator}. Les paramètres de lancement sont obtenue par le
 module \texttt{main}, en charge d'analyser les arguments de la ligne de
-commande. La simulation est commandé par le fichier d'entrée, comportant
+commande. La simulation est commandée par le fichier d'entrée, comportant
 des instructions \texttt{IN} et des instruction \texttt{out}, dictant
-l'entrée ou la sortie d'un packet.
+l'entrée ou la sortie d'un paquet.
 
 Lors de la lecture d'une instruction \texttt{IN}, le module
 \texttt{trame} sera appelé afin de lire une trame depuis le fichier
 d'entrée. Celle-ci est alors rangée dans une structure de données
-nommé \texttt{ListPacketFrag}, en attandant d'obtenir toute les trames
+nommé \texttt{ListPacketFrag}, en attendant d'obtenir toute les trames
 d'un même paquet. C'est donc une liste chaîné, contenant dans chaque
 cellule un \texttt{PacketFrag} – paquet fragmenté – contenant un tableau
-de trame, remplit au fur et à mesure de leur arrivée. Lorsque toute les
-trames d'un même paquet sons reçu, le paquet fragmenté est retiré de la
+de trame, rempli au fur et à mesure de leur arrivée. Lorsque toutes les
+trames d'un même paquet sont reçues, le paquet fragmenté est retiré de la
 liste \texttt{ListPacketFrag}, afin d'être envoyé au module
 \texttt{packet}, en charge de l'assemblage. Le schéma ci-après résume
 le stockage des données dans les différentes structures.
@@ -132,17 +132,17 @@ Un paquet étant reconstitué, celui-ci est envoyé au module
 \texttt{commut}, en charge de sa commutation. Celui-ci modifie son label
 en concordance avec la table de commutation, et indique au simulateur le
 lien de sortie. Celui-ci va alors demander au module \texttt{packet} de
-le fragmenter, avant de l'envoyer dans la \texttt{queue} dédié au lien
-de sortie précédement établit.
+le fragmenter, avant de l'envoyer dans la \texttt{queue} dédiée au lien
+de sortie précédemment établi.
 
 Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé
-afin d'envoyer une trame sur le lien de sortie concernée et donc de
+afin d'envoyer une trame sur le lien de sortie concerné et donc de
 l'écrire dans un fichier de sortie. La trame sortie est sélectionnée
 selon sa priorité de manière circulaire sauf la priorité absolue, qui
 elle, est envoyée immédiatement après un \texttt{OUT}.
 
 Le diagramme UML page suivante résume les différents modules utilisés
-dans l'application ainsi que les relations qui les lie.
+dans l'application ainsi que les relations qui les lient.
 
 \includegraphics[height=27cm]{UML.jpg}
 
@@ -165,7 +165,7 @@ typedef struct {
     unsigned char * charge; /* contenue */
 } Trame;
 \end{minted}
-Cette fonction a été implémenté sous la forme d'une machine à état afin
+Cette fonction a été implémenté sous la forme d'une machine à états afin
 de suivre l'avancement dans la lecture. L'état $9$ désigne la lecture du
 fanion de fin de trame, tandis qu'un état négatif désigne la détection
 d'une erreur.
@@ -188,15 +188,15 @@ est associé à la lecture des bits de poids faible de l'ID. Pour obtenir
 l'ID final, on utilise l'opération ou entre l'octet lu et les bits de poids
 fort précédement décalé.
 
-Tout au long du décodage, la CRC est calculé en effectuant un ou exclusif
-avec l'octet qui vient d'être lu. Si la CRC lu dans la trame n'est pas
+Tout au long du décodage, la CRC est calculé en effectuant un \textit{ou exclusif}
+avec l'octet qui vient d'être lu. Si la CRC lue dans la trame n'est pas
 identique, la trame est ignoré.
 \begin{minted}{c}
 crc ^= pending;
 \end{minted}
 
 Inversement, ce module propose une fonction d'encodage, servant cette
-fois-ci à écrire les données contenue dans la structure \texttt{Trame}
+fois-ci à écrire les données contenues dans la structure \texttt{Trame}
 dans un fichier. Voici son prototype :
 \begin{minted}{c}
 int trame_encode(FILE * stream, Trame * t);
@@ -205,8 +205,8 @@ int trame_encode(FILE * stream, Trame * t);
 
 \subsubsection{packetfrag}
 \texttt{packetfrag} correspond à un module gérant les fragments de paquets,
-ou les trames d'un même paquet. Un paquet fragmenté contient, comme ci
-dessous, une trame ainsi que la taille du paquet auquel elle appartient :
+ou les trames d'un même paquet. Un paquet fragmenté contient, comme ci-dessous, 
+une trame ainsi que la taille du paquet auquel elle appartient :
 \begin{minted}{c}
 struct PacketFrag {
     // Nombre de fragment (taille du tableau)
@@ -220,7 +220,7 @@ typedef struct PacketFrag PacketFrag;
 
 \subsubsection{listpacketfrag}
 \texttt{listepacketfrag} est un module qui définit la structure des
-maillons de la liste chainé qui contient les fragments de paquet.
+maillons de la liste chainée qui contient les fragments de paquet.
 \begin{minted}[linenos,tabsize=4]{c}
  struct ListPacketFrag {
     // Nombre de trame stocké dans le packet fragmenté
@@ -239,7 +239,7 @@ si une trame appartient au paquet concerné ou non. Elle contient aussi
 un compteur qui permet de savoir lorsque toute les trames d'un paquet
 sont arrivées dès que celui-ci atteint le nombre de séquence.
 
-Cette liste chaîné est utilisé afin de stoquer les paquets fragmentés
+Cette liste chaînée est utilisée afin de stocker les paquets fragmentés
 avant leur assemblage. Il propose donc des fonctions d'ajout de trame,
 et de retrait de paquet fragmenté (lorsque le paquet est assemblé) dont
 les prototypes sont les suivants :
@@ -251,7 +251,7 @@ void lpf_del(ListPacketFrag ** lpf, ListPacketFrag * cellule);
 
 \subsubsection{packet}
 \texttt{Packet} est un module contenant la structure qui représentera à
-nos yeux une trame définie comme ci dessous:
+nos yeux un paquet défini comme ci dessous:
 \begin{minted}[linenos,tabsize=4]{c}
  struct Packet {
   unsigned int label;
@@ -305,7 +305,7 @@ Qui elle, renvoie le lien de sortie et modifie le label du paquet.
 
 \subsubsection{queue}
 \texttt{Queue} est un module gérant les files d'attentes avec gestion
-des priorité. Une queue est une liste chaîné de trames :
+des priorité. Une queue est une liste chaînée de trames :
 \begin{minted}{c}
  struct Queue {
     struct Queue * previous;
@@ -314,7 +314,7 @@ des priorité. Une queue est une liste chaîné de trames :
 typedef struct Queue Queue;
 \end{minted}
 Chaque queue sera attribuée à une priorité. Dans notre cas, 256 priorités
-sont géré, et chaque queue associé est stocké dans une cellule d'un
+sont gérées, et chaque queue associée est stockée dans une cellule d'un
 tableau de 256 queues, l'indice représentant la priorité.
 Ce tableau est contenu dans une structure WRRS ci dessous :
 \begin{minted}{c}
@@ -334,8 +334,8 @@ L'ajout de trame se fait par le biais de la fonction de la fonction
 void wrrs_push(WRRS * server, unsigned short int priority, Trame * trame);
 \end{minted}
 Les variables \texttt{priorité} et \texttt{credit} dans le WRRS
-contiennent les informations nécessaire à l'application de l'algorithme
-de décision lors de la sortie d'une trame. Celui-ci est déclanché par
+contiennent les informations nécessaires à l'application de l'algorithme
+de décision lors de la sortie d'une trame. Celui-ci est déclenché par
 l'appel de la fonction \texttt{wrrs\_pop} dont voici le prototype :
 \begin{minted}{c}
 /* Obtenir la prochaine trame devant sortir du serveur.
@@ -352,23 +352,23 @@ validité des paramètres, comme une  aussi la validité des données.
 \subsubsection{simulator}
 \texttt{simulator} est le coordinateur des autres modules
 précédemment énoncés. Il est appelé par la méthode \texttt{main} et
-s'occupe de l'ouverture des différents fichier. Il s'occupe également de
+s'occupe de l'ouverture des différents fichiers. Il s'occupe également de
 charger la table de commutation par le biais du module \texttt{commut}.
-Tous comme \texttt{trame\_decode}, il implémente une machine à état pour
+Tout comme \texttt{trame\_decode}, il implémente une machine à état pour
 la lecture du fichier d'entrée. Deux sous-programme, \texttt{in} et
 \texttt{out} s'occupent des actions a effectuer à la lecture de « IN »
 ou de « OUT ».
 
 La fonction \texttt{in} va tous d'abord décoder une trame avant de
-l'envoyer dans la structure de stoquage temporaire en attendant
+l'envoyer dans la structure de stockage temporaire en attendant
 l'assemblage. S'il s'agit de la dernière trame manquante d'un paquet,
-les trames associées sont retiré de la liste pour être assemblé. Le
+les trames associées sont retirées de la liste pour être assemblées. Le
 paquet est ensuite commuté, fragmenté, et envoyé dans la file d'attente
 associé à son lien de sortie.
 
 La fonction \texttt{out} appelle la fonction \texttt{wrrs\_push} sur la
-file d'attente associé au lien de sortie demandé. La trame ainsi
-récupéré est écrite dans le bon fichier par le biais de 
+file d'attente associée au lien de sortie demandé. La trame ainsi
+récupérée est écrite dans le bon fichier par le biais de 
 \texttt{trame\_encode}.
 
 
@@ -377,7 +377,7 @@ récupéré est écrite dans le bon fichier par le biais de
 
 \subsection{Difficultés et solutions}
 
-Au départ, le stockage dans l'ordre des trames semblait bien difficile. Un tableau dynamique n'était pas simple à manipuler mais nous ne pouvions pas mettre de tableau fixe. Nous avons réalisé que lorsque l'on recevait une trame, on savait directement le nombre de trame que l'on recevrait grâce à l’attribut nbf. Ainsi il semblait bien plus simple d'allouer directement un tableau de la bonne taille et ranger les trames dans le bon ordre.
+Au départ, le stockage dans l'ordre des trames semblait bien difficile. Un tableau dynamique n'était pas simple à manipuler mais nous ne pouvions pas mettre de tableau fixe. Nous avons réalisé que lorsque l'on recevait une trame, on savait directement le nombre de trame que l'on recevrait grâce à l'attribut \textit{nbf}. Ainsi il semblait bien plus simple d'allouer directement un tableau de la bonne taille et ranger les trames dans le bon ordre.
 
 \subsubsection{Solutions envisageable}
 
@@ -406,8 +406,6 @@ C'est dans la partie assemblage que nous avions défini la structure Packet et l
 
 Puis dans la partie queue nous avions envisagé que la queue serait un tableau de taille 256, soit le nombre maximal de priorité. 
 
-% TODO
-
 \subsubsection{Difficultés rencontrées et solution retenue}
 
 Comme le calcul de CRC ne tient pas compte du CRC original suivant la charge, donc les difficultés concernant cette procédure sont :
@@ -421,41 +419,39 @@ Comme le calcul de CRC ne tient pas compte du CRC original suivant la charge, do
 
 Pour le problème 1 :
 
-selon la formule :
+Selon la formule :
 
 A = A xor B xor B
 
-on sait qu'il suffit de faire une fois ou exclusif avec le CRC original et le CRC calculé incluant CRC original, on peut obtenir un CRC  en excluant le CRC original.
+On sait qu'il suffit de faire une fois \textit{ou exclusif} avec le CRC original et le CRC calculé incluant CRC original, on peut obtenir un CRC  en excluant le CRC original.
 
 Pour le problème 2 :
 
 Si la CRC reçu est un fanion ou un banaliseur, c'est qu'on a
  calculé la crc aussi sur le banaliseur qui précédait la crc reçu.
 
-Donc on doit faire encore une fois ou exclusif avec le banaliseur.
+Donc on doit faire encore une fois \textit{ou exclusif} avec le banaliseur.
 
 
-Comme il n'y pas de mécanisme de gestion d'exception comme JAVA pour langage C, on utilise un type de retour INT pour indiquer l'état d'exécution afin de contrôler les exceptions.
+Comme il n'y pas de mécanisme de gestion d'exception comme JAVA pour langage C, on utilise un type de retour INT pour indiquer l'état d'exécution afin de contrôler les erreurs.
 On a décider un code de retour tel que si 0, ça veut dire qu'il n'y pas d'erreur, -1 sinon.
 
 \vspace{0.5cm}
 
 Ainsi, partant de la volonté de développer une application efficace, nous avons effectué grand nombre de modifications. La plus significative concernant la structure de donnée qui stocke les trames lorsqu'un paquet n'est pas encore complet. En effet, nous sommes passés d'une liste de liste à une liste de tableau.
 
-Un second regard nous a permis de réaliser que lorsque l'on recevait une trame, on savait directement le nombre de trame que l'on recevrait grâce à l'attribut nbf. Ainsi il semblait bien plus simple d'allouer directement un tableau de la bonne taille et ranger les trames dans le bon ordre.
-
 \section{Conclusion}
 
 Pour mener à bien ce projet de première année, nous avons dû approfondir nos connaissances en terme d'analyse de trame. Nous nous sommes aussi documenté sur le fonctionnement des protocoles TCP/IP afin de s'en inspirer.
 
-De plus, ce projet nous a permis de nous familiariser avec la démarche de création d’un programme complexe ainsi  que des notions vues en réseaux. En effet, nous avons développé cette application par un travail de groupe, ce qui nous attend en tant que futurs ingénieurs. Plusieurs personnes travaillant sur un même programme ont besoin d'énormément de coordination et de synchronisation. Cela s'est révélé bien plus difficile que prévu, outre la standardisation de nos variables et la répartition des modules.
+De plus, ce projet nous a permis de nous familiariser avec la démarche de création d'un programme complexe ainsi  que des notions vues en réseaux. En effet, nous avons développé cette application par un travail de groupe, ce qui nous attend en tant que futurs ingénieurs. Plusieurs personnes travaillant sur un même programme ont besoin d'énormément de coordination et de synchronisation. Cela s'est révélé bien plus difficile que prévu, outre la standardisation de nos variables et la répartition des modules.
 
-La partie que nous avons développée correspond aux objectifs de départ. Les résultats de simulation sont tout à fait satisfaisants tant au niveau routage qu'au niveau gestion de la mémoire. Savoir faire des simulation et le faire tout le long du projet est un outil précieux afin de corriger les erreurs le plus vite possible avant que celles-ci ne se répercutent sur la suite.
+La partie que nous avons développée correspond aux objectifs de départ. Les résultats de simulation sont tout à fait satisfaisants tant au niveau routage qu'au niveau gestion de la mémoire. Savoir faire des simulations et le faire tout le long du projet est un outil précieux afin de corriger les erreurs le plus vite possible avant que celles-ci ne se répercutent sur la suite.
 
 Le projet que nous avons réalisé cette année peut encore évoluer.
 En effet, la gestion des trames perdues ou erronées est très limitée.
 Il pourrait être envisagé d'étendre le protocole afin de permettre de la
-reprise sur erreur. Par exemple, nous pourrions une fonctionnalité qui détruirait la trame si aucune autre trame du même paquet 
+reprise sur erreur. Par exemple, nous pourrions une ajouter fonctionnalité qui détruirait la trame si aucune autre trame du même paquet 
 n'arrive dans un délai imparti. Ceci permet de recevoir un paquet de
 même ID qui arriverait plus tard. Une autre voie d'évolution est la
 gestion de plusieurs liens entrants, avec éventuellement une table de
