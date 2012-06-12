@@ -74,50 +74,31 @@ Notre application ayant attrait au réseau, il est naturel de la décomposer en 
 
 Le simulateur est lancé par la méthode \texttt{simulate} du module \texttt{simulator}. Les paramètres de lancement sont obtenue par le module \texttt{main}, en charge d'analyser les arguments de la ligne de commande. La simulation est commandé par le fichier d'entrée, comportant des instructions \texttt{IN} et des instruction \texttt{out}, dictant l'entrée ou la sortie d'un packet.
 
-Lors de la lecture d'une instruction \texttt{IN}, le module \texttt{trame} sera appelé afin de lire une trame depuis le fichier d'entrée. Celle-ci est alors rangée dans une structure de données nommé \texttt{ListPacketFrag}, en attandant d'obtenir toute les trames d'un même paquet. C'est donc une liste chaîné, contenant dans chaque cellule un \texttt{PacketFrag} – paquet fragmenté – contenant un tableau de trame, remplit au fur et à mesure de leur arrivée. Lorsque toute les trames d'un même paquet sons reçu, le paquet fragmenté est retiré de la liste \text{ListPacketFrag}, afin d'être envoyé au module \texttt{packet}, en charge de l'assemblage. Le schéma ci-après résume le stockage des données dans les différentes structures. 
-
-Ensuite, lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d'envoyer une trame sur le lien de sortie concernée et donc de l'écrire dans un fichier de sortie. La trame sortie est sélectionnée selon sa priorité de manière circulaire sauf la priorité absolue, qui elle, est envoyée immédiatement après un \texttt{OUT}.
+Lors de la lecture d'une instruction \texttt{IN}, le module \texttt{trame} sera appelé afin de lire une trame depuis le fichier d'entrée. Celle-ci est alors rangée dans une structure de données nommé \texttt{ListPacketFrag}, en attandant d'obtenir toute les trames d'un même paquet. C'est donc une liste chaîné, contenant dans chaque cellule un \texttt{PacketFrag} – paquet fragmenté – contenant un tableau de trame, remplit au fur et à mesure de leur arrivée. Lorsque toute les trames d'un même paquet sons reçu, le paquet fragmenté est retiré de la liste \texttt{ListPacketFrag}, afin d'être envoyé au module \texttt{packet}, en charge de l'assemblage. Le schéma ci-après résume le stockage des données dans les différentes structures.
 
 \includegraphics{s1.png}
 
-Un paquet étant reconstitué, celui-ci est envoyé au module \texttt{commut}, en charge de sa commutation. Celui-ci modifie son label en concordance avec la table de commutation, et indique au simulateur le lien de sortie. Celui-ci va alors envoyer 
+Un paquet étant reconstitué, celui-ci est envoyé au module \texttt{commut}, en charge de sa commutation. Celui-ci modifie son label en concordance avec la table de commutation, et indique au simulateur le lien de sortie. Celui-ci va alors demander au module \texttt{packet} de le fragmenter, avant de l'envoyer dans la \texttt{queue} dédié au lien de sortie précédement établit.
+
+Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d'envoyer une trame sur le lien de sortie concernée et donc de l'écrire dans un fichier de sortie. La trame sortie est sélectionnée selon sa priorité de manière circulaire sauf la priorité absolue, qui elle, est envoyée immédiatement après un \texttt{OUT}.
 
 \subsection{Détail des types et sous programmes}
 
-\begin{center}
-\begin{tabular}{|l|l|l|}\hline
-MODULE & TYPES & SOUS-PROGRAMMES\\\hline
-trame & Trame & trame\_init\\
- &  & trame\_destroy\\
- &  & trame\_decode\\
- &  & trame\_encode\\
- &  & trame\_print\\\hline
-packet & Packet & packet\_init\\
- &  & packet\_destroy\\
- &  & packet\_assemble\\
- &  & packet\_split\\
- &  & packet\_print\\\hline
-packetfrag & PacketFrag & lpf\_init\\
- &  & lpf\_add\\
- &  & lpf\_del\\
- &  & lpf\_destroy\\
- &  & lpf\_print\\\hline
-ListPacketFrag & ListPacketFrag & A faire \\\hline %TODO
-queue & Queue WRRS & wrrs\_init\\
- &  & wrrs\_push\\
- &  & wrrs\_pop\\
- &  & wrrs \_print\\\hline
-commut & ListRule & commut \_init\\
- &  & commut \_load\\
- &  & commut \_commut\\
- &  & commut \_print\\\hline
-simulator & $\varnothing$ & simulate\\\hline
-\end{tabular}
-\end{center}
+\subsubsection{trame}
 
-\subsection{Présentation des principaux algorithmes}
+\subsubsection{packetfrag}
 
-%TODO
+\subsubsection{listpacketfrag}
+
+\subsubsection{packet}
+
+\subsubsection{commut}
+
+\subsubsection{queue}
+
+\subsubsection{simulator}
+
+\subsubsection{main}
 
 \section{Réalisation du projet}
 
