@@ -95,6 +95,25 @@ Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d
 \subsubsection{commut}
 
 \subsubsection{queue}
+\texttt{Queue} est un module gérant les files d'attente ainsi que les 256 priorités. Une queue est une structure comportant un pointeur vers une autre queue comme ci dessous :
+\begin{minted}{c}
+ struct Queue {
+    struct Queue * previous;
+    Trame * element;
+};
+typedef struct Queue Queue;
+\end{minted}
+Chaque queue sera attribuée à une priorité et contiendra une liste chaînée de Trame. Les 256 queues des 256 priorités sont stockées dans un tableau de 256 queue dont l'indice représente la priorité. Zéro étant la plus forte priorité. Ce tableau est contenu dans une structure WRRS ci dessous :
+\begin{minted}{c}
+ /* Weighted Rount Robin Server */
+struct WRRS {
+    Queue * queue[NBPRIORITY]; // Tableau des queues de trame (une par priorité)
+    int priority; // Priorité en cours
+    int credit; // Nombre de crédit pour la priorité en cours
+};
+typedef struct WRRS WRRS;
+\end{minted}
+La variable priorité dans le WRRS contient la dernière priorité envoyée pour reprise.
 
 \subsubsection{simulator}
 
