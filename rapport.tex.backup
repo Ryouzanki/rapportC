@@ -69,12 +69,25 @@ Nous avons ensuite regroupé notre travail et avons modifié la structure géné
 
 Enfin, il faut remarquer que notre application est vouée à évoluer : il serait par exemple souhaitable que le commutateur soit capable de mieux traiter les erreur (reprise sur erreur, renvoie...)
 
-\section{Implémentation}
-\subsection{Architecture de l'application en module}
+\section{Application exécutable}
+\subsection{Principe de l'application}
 
 A la vue des fonctionnalités énoncées ci-dessus, notre solution a été conçue pour être évolutive (car décomposée en modules distinct) et stable. L'application exécutable se décompose en modules fonctionnels explicités par le schéma ci-dessous :
 
-\includegraphics{s1.png}
+\includegraphics{structures.svg}
+
+Détaillons ce schéma en étudiant une manipulation possible de la part de l'utilisateur.
+
+Le module X reçoit les trames et se charge de X et de les distribuer à X.
+
+Par exemple, si on reçoit une trame de type IN blabla, le module X appelle X permettant de modifier les attributs de X. L'enchaînement des appels entre les modules suit alors la démarche suivante :
+
+% TODO
+
+\section{Implémentation}
+\subsection{Architecture de l'application en module}
+
+% TODO
 
 \subsection{Détail des types et sous programmes}
 
@@ -115,12 +128,18 @@ simulator & $\varnothing$ & simulate\\\hline
 
 \section{Réalisation du projet}
 
+\subsection{Objectifs}
+
+L'enjeu principal ici était probablement de limiter les fuites de mémoire, de ne pas la gaspiller. Nous avons surtout été amenés à prendre des décisions relativement à cet enjeu.
+
+%TODO
+
 \subsection{Difficultés et solutions}
 
-\begin{itemize}
- \item 
-\end{itemize}
+– la liste des difficultés rencontrées et les solutions adoptées en justifiant vos choix (en
+particulier quand vous avez envisagé plusieurs solutions),
 
+– la présentation des principaux choix réalisés :
 
 \subsubsection{Solutions envisageable}
 
