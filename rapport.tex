@@ -82,6 +82,10 @@ Un paquet étant reconstitué, celui-ci est envoyé au module \texttt{commut}, e
 
 Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d'envoyer une trame sur le lien de sortie concernée et donc de l'écrire dans un fichier de sortie. La trame sortie est sélectionnée selon sa priorité de manière circulaire sauf la priorité absolue, qui elle, est envoyée immédiatement après un \texttt{OUT}.
 
+Le diagramme UML page suivante résume les différents modules utilisés dans l'application ainsi que les relations qui les lie.
+
+\includegraphics[height=27cm]{UML.jpg}
+
 \subsection{Détail des modules}
 
 \subsubsection{trame}
@@ -247,8 +251,8 @@ des priorité. Une queue est une liste chaîné de trames :
 };
 typedef struct Queue Queue;
 \end{minted}
-Chaque queue sera attribuée à une priorité. Dans notre cas, 256 prioritées
-sont géré, et chaque queue associé est stoqué dans une cellule d'un
+Chaque queue sera attribuée à une priorité. Dans notre cas, 256 priorités
+sont géré, et chaque queue associé est stocké dans une cellule d'un
 tableau de 256 queues, l'indice représentant la priorité.
 Ce tableau est contenu dans une structure WRRS ci dessous :
 \begin{minted}{c}
@@ -276,10 +280,12 @@ l'appel de la fonction \texttt{wrrs\_pop} dont voici le prototype :
 Trame * wrrs_pop(WRRS * server);
 \end{minted}
 
+\subsubsection{main}
+
 
 \subsubsection{simulator}
 \texttt{simulator} est le module qui appelle tous les autres modules précédemment énoncés. Il est appelé par le main et coordonne toutes les fonctions qui assureront le bon  
-\subsubsection{main}
+
 
 \section{Réalisation du projet}
 
