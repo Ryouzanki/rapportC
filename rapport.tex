@@ -27,7 +27,8 @@
 \geometry{hmargin=2.5cm,vmargin=1.5cm}
 
 \title{Projet C\\Simulation d'un commutateur de niveau 3\\Rapport}
-\author{Philippe \textsc{Tran Ba}, Élie \textsc{Bouttier}, Jiajun \textsc{Shi}, Émilie \textsc{Abia}\\Groupe 15}
+\author{Philippe \textsc{Tran Ba}, Élie \textsc{Bouttier},
+Jiajun \textsc{Shi}, Émilie \textsc{Abia}\\Groupe 15}
 \date\today
 
 \begin{document}
@@ -120,24 +121,18 @@ while (state < 9 && state > -1) {
     }
 }
 \end{minted}
+Par exemple, un des états est associé à la lecture des bits de poids fort
+de l'ID de la trame. L'octet lu est alors décalé de 8 bits. L'état suivant
+est associé à la lecture des bits de poids faible de l'ID. Pour obtenir
+l'ID final, on utilise l'opération ou entre l'octet lu et les bits de poids
+fort précédement décalé.
+
 Tout au long du décodage, la CRC est calculé en effectuant un ou exclusif
 avec l'octet qui vient d'être lu. Si la CRC lu dans la trame n'est pas
 identique, la trame est ignoré.
 \begin{minted}{c}
 crc ^= pending;
 \end{minted}
-
-%~ Le décodage se fait en telles étapes :
-%~ \begin{enumerate}
- %~ \item initialiser une variable de crc afin d'effectuer le contrôle d'erreur
- %~ \item abandonner toutes les informations redondantes avant que l'on rencontre un fanion afin d'assurer le départ du décodage.
- %~ \item Pour chaque octet utile reçu, faire l'opération \textit{ou exclusif} avec l'ancien crc pour générer le nouveau crc.
- %~ \item Pour transformer les octets en attributs d'une trame, on décale le premier octet à gauche de 8 bits et l'opération \textit{ou} avec le deuxième octet afin de construire les attributs de 16 bits.
- %~ \item Lors que l'on rencontre un banaliseur, on récupère l'octet suivant.
- %~ \item Lors que l'on rencontre un fanion, la lecture de la séquence de bits est terminée et on récupère le dernier élément dans partie de charges comme le crc original.
- %~ \item Refaire l'opération \textit{ou exclusif} entre crc calculé et le crc original, afin d'obtenir un crc pour la trame sauf les fanion et le crc original.
- %~ \item Faire la comparaison entre le crc calculé et le crc original, s'ils sont identiques, la trame est reçue correctement, sinon, on ignore cette trame et elle est détruite.
-%~ \end{enumerate}
 
 Inversement, ce module propose une fonction d'encodage, servant cette
 fois-ci à écrire les données contenue dans la structure \texttt{Trame}
@@ -148,7 +143,10 @@ int trame_encode(FILE * stream, Trame * t);
 
 
 \subsubsection{packetfrag}
-\texttt{packetfrag} correspond à un module gérant les fragments de paquets, ou les trames d'un même paquet. Un packetfrag contient, comme ci dessous, une trame ainsi que la taille du paquet auquel elle appartient :\begin{minted}{c}
+\texttt{packetfrag} correspond à un module gérant les fragments de paquets,
+ou les trames d'un même paquet. Un paquet fragmenté contient, comme ci
+dessous, une trame ainsi que la taille du paquet auquel elle appartient :
+\begin{minted}{c}
 struct PacketFrag {
     // Nombre de fragment (taille du tableau)
     int size;
