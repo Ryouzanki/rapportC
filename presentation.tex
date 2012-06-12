@@ -1,0 +1,98 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usetheme{Warsaw}
+\usepackage[french]{babel}
+
+\title{Projet C\\---\\Commutateur niveau 3}
+\author{Philippe \bsc{Tran Ba} - Élie \bsc{Bouttier}\\Jiajun \bsc{Shi} - Émilie \bsc{Abia}}
+\institute{ENSEEIHT, département TR}
+
+\usepackage{xcolor,times}
+
+
+% Faire apparaître un sommaire avant chaque section
+\AtBeginSection[]{
+   \begin{frame}
+   \begin{center}{\Large Plan }\end{center}
+   %%% affiche en début de chaque section, les noms de sections et
+   %%% noms de sous-sections de la section en cours.
+   \tableofcontents[currentsection,hideothersubsections]
+   \end{frame} 
+}
+
+\usepackage{listings}
+  \newcommand*\styleC{\fontsize{9}{10pt}\usefont{T1}{ptm}{m}{n}\selectfont }
+  \newcommand*\styleD{\fontsize{9}{10pt}\usefont{OT1}{pag}{m}{n}\selectfont }
+
+  \makeatletter
+  % on fixe le langage utilisé
+  \lstset{language=C}
+  \edef\Motscle{emph={\lst@keywords}}
+  \expandafter\lstset\expandafter{%
+    \Motscle}
+  \makeatother
+
+
+  \definecolor{Ggris}{rgb}{0.45,0.48,0.45}
+
+  \lstset{emphstyle=\rmfamily\color{blue}, % les mots réservés de matlab en bleu
+  basicstyle=\styleC,
+  keywordstyle=\ttfamily,
+  commentstyle=\color{Ggris}\styleD, % commentaire en gris
+  numberstyle=\tiny\color{red},
+  numbers=left,
+  numbersep=10pt,
+  lineskip=0.7pt,
+  showstringspaces=false}
+  %  % inclure le fichier source
+  \newcommand{\FSource}[1]{%
+  \lstinputlisting[texcl=true]{#1}
+  }
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\tableofcontents
+\end{frame}
+
+\section{Introduction}
+
+\section{Architecture du programme}
+
+\begin{frame}
+%\begin{center}
+\hspace{-1cm}\includegraphics[scale=0.28]{UML2.jpg}
+%\end{center}
+\end{frame}
+
+\frame{\center{\hspace{1.6cm}\includegraphics[scale=0.7]{s2.png}}}
+
+\section{Implémentation}
+
+\subsection{Trame}
+
+\frame{\FSource{sources/trame.h}}
+
+\frame{\FSource{sources/automate.c}}
+
+\subsection{PacketFrag}
+
+
+\subsection{ListPacketFrag}
+
+\subsection{Packet}
+
+\subsection{Commut}
+
+\subsection{Queue}
+
+\subsection{Main}
+
+\subsection{Simulator}
+
+
+\end{document}
