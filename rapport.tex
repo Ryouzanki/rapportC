@@ -82,9 +82,22 @@ Un paquet étant reconstitué, celui-ci est envoyé au module \texttt{commut}, e
 
 Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d'envoyer une trame sur le lien de sortie concernée et donc de l'écrire dans un fichier de sortie. La trame sortie est sélectionnée selon sa priorité de manière circulaire sauf la priorité absolue, qui elle, est envoyée immédiatement après un \texttt{OUT}.
 
-\subsection{Détail des types et sous programmes}
+\subsection{Détail des modules}
 
 \subsubsection{trame}
+Le module \texttt{trame} propose une fonction de décodage dont le prototype est le suivant :
+\begin{minted}{c}
+
+\end{minted}
+\begin{minted}[linenos,tabsize=4]{c}
+typedef struct {
+  unsigned short int id; /* numéro du paquet */
+  unsigned short int seqf; /* numéro de séquence */
+  unsigned short int nbf; /* nombre de séquence */
+  unsigned int length; /* longeur de charge */
+  unsigned char * charge; /* contenue */
+} Trame;
+\end{minted}
 Le décodage se fait en telles étapes :
 \begin{enumerate}
  \item initialiser une variable de crc afin d'effectuer le contrôle d'erreur
