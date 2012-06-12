@@ -281,10 +281,10 @@ Trame * wrrs_pop(WRRS * server);
 \end{minted}
 
 \subsubsection{main}
-
+Le \texttt{main} se contente de gérer les erreur et surtout de récupérer les arguments. Après avoir vérifié que les arguments sont correctes, ils les fait passer au module principal qui est \texttt{simulator}. Il vérifie aussi la validité des données.
 
 \subsubsection{simulator}
-\texttt{simulator} est le module qui appelle tous les autres modules précédemment énoncés. Il est appelé par le main et coordonne toutes les fonctions qui assureront le bon  
+\texttt{simulator} est le module qui appelle tous les autres modules précédemment énoncés. Il est appelé par le main et coordonne toutes les fonctions qui assureront le bon fonctionnement de notre commutateur de niveau 3. C'est lui qui ouvre et lit le fichier d'entrée et qui ouvre le fichier de sortie.
 
 
 \section{Réalisation du projet}
