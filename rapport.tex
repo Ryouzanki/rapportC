@@ -115,13 +115,28 @@ struct PacketFrag {
     // Nombre de fragment (taille du tableau)
     int size;
     // Tableau contenant les trames
-	Trame ** trames;
+       Trame ** trames;
 };
 typedef struct PacketFrag PacketFrag;
 \end{minted}
 \subsubsection{listpacketfrag}
-
+\texttt{listepacketfrag} est un module qui définit la structure des maillons de la liste chainé qui contient les fragments de paquet. 
+\begin{minted}[linenos,tabsize=4]{c}
+ struct ListPacketFrag {
+    // Nombre de trame stocké dans le packet fragmenté
+    int count;
+    // ID du packet associé
+    int id;
+    // Packet fragmenté de la cellule
+    PacketFrag * pf;
+    // Cellule suivante
+    struct ListPacketFrag * next;
+};
+typedef struct ListPacketFrag ListPacketFrag;
+\end{minted}
+\texttt{listepacketfrag} contient l'ID du paquet associé afin de savoir si une trame appartient au paquet concerné ou non. Elle contient aussi un compteur qui permet de savoir si le paquet est complet dans la mesure où toutes les trames attendues sont arrivées.
 \subsubsection{packet}
+
 
 \subsubsection{commut}
 
