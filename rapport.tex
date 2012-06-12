@@ -117,21 +117,18 @@ simulator & $\varnothing$ & simulate\\\hline
 
 \subsection{Difficultés et solutions}
 
-\begin{itemize}
- \item 
-\end{itemize}
-
+Au départ, le stockage dans l'ordre des trames semblait bien difficile. Un tableau dynamique n'était pas simple à manipuler mais nous ne pouvions pas mettre de tableau fixe. Nous avons réalisé que lorsque l'on recevait une trame, on savait directement le nombre de trame que l'on recevrait grâce à l’attribut nbf. Ainsi il semblait bien plus simple d'allouer directement un tableau de la bonne taille et ranger les trames dans le bon ordre.
 
 \subsubsection{Solutions envisageable}
 
-Plusieurs solutions ont été proposées lors de l'étude du cahier des charges. Dans la mesure où il nous était demandé de ne pas nous focaliser sur les performances mais plutôt sur le choix des structures de données et l'efficacité des algorithmes il s'agissait de lister les solutions simples à mettre en œuvre. 
+Plusieurs solutions ont été proposées lors de l'étude du cahier des charges. Dans la mesure où il nous était demandé de ne pas nous focaliser sur les performances mais plutôt sur le choix des structures de données et l'efficacité des algorithmes.
 
 Au départ nous comptions gérer les trames dans une partie décodage, gérer les paquets dans une partie assemblage et gérer la queue dans une partie éponyme.
  
-Dans la partie décodage nous avions défini une structure de données Trame, une liste chaînée de trames utilisée pour stocker les trames d'un même paquet qui n'est pas encore complet et une liste de « Paquets Fragmentés » ListePacketFrag utilisée pour stocker les différentes listes de trame (une par paquet ?).
+Dans la partie décodage nous avions défini une structure de données Trame, une liste chaînée de trames utilisée pour stocker les trames d'un même paquet qui n'est pas encore complet et une liste de « Paquets Fragmentés » ListePacketFrag utilisée pour stocker les différentes listes de trame.
 
 
- (Nous avions alors envisagé que les opérations disponibles sur une trame pourraient être :
+Nous avions alors envisagé que les opérations disponibles sur une trame pourraient être :
 Créer une trame à partir d'un numéro de paquet, d'un numéro de séquence, d'un nombre de séquence, de la longueur d'une charge, d'une somme de contrôle et d'un contenu.
 \begin{enumerate}
  \item Initialiser une trame
@@ -145,7 +142,7 @@ Créer une trame à partir d'un numéro de paquet, d'un numéro de séquence, d'
  \item Calculer CRC
 \end{enumerate}
 
-C'est dans la partie assemblage que nous avions défini la structure Packet et les opérations disponibles sur un paquet, la plus importante étant bien sûr l'assemblage d'un paquet.
+C'est dans la partie assemblage que nous avions défini la structure Packet et les opérations disponibles sur un paquet, la plus importante étant bien sûr le décodage de la trame dans le but de l'intégrer à un paquet.
 
 Puis dans la partie queue nous avions envisagé que la queue serait un tableau de taille 256, soit le nombre maximal de priorité. 
 
@@ -153,11 +150,13 @@ Puis dans la partie queue nous avions envisagé que la queue serait un tableau d
 
 \subsubsection{Difficultés rencontrées}
 
-Un second regard nous a permis de réaliser que lorsque l'on recevait une trame, on savait directement le nombre de trame que l'on recevrait grâce à l’attribut nbf. Ainsi il semblait bien plus simple d'allouer directement un tableau de la bonne taille, de ranger les trames dans l'ordre, etc …
+
 
 \subsubsection{Solution retenue}
 
 Ainsi, partant de la volonté de développer une application efficace, nous avons effectué grand nombre de modifications. La plus significative concernant la structure de donnée qui stocke les trames lorsqu'un paquet n'est pas encore complet. En effet, nous sommes passés d'une liste de liste à une liste de tableau.
+
+Un second regard nous a permis de réaliser que lorsque l'on recevait une trame, on savait directement le nombre de trame que l'on recevrait grâce à l’attribut nbf. Ainsi il semblait bien plus simple d'allouer directement un tableau de la bonne taille et ranger les trames dans le bon ordre.
 
 \section{Conclusion}
 
@@ -180,34 +179,6 @@ temps devra être détaillé par phase : compréhension, conception, programmati
 point, documentation, préparation de la présentation...
 Remarque : Le rapport ne doit pas dépasser 10 pages, listing non compris
 
-
-
-
-
-ANNEXE 
-– une annexe décrivant les apports personnels tirés de ce projet.
-
-
-
-
-
-% \newpage
-% \hspace{-3cm}
-% \includegraphics[width=18cm]{uml.pdf}
-% \newpage
-% 
-% \subsection{Récupération des options}
-% La classe Options possède des arguments public et static, correspondant
-% aux différentes variables paramétrables.
-% \begin{minted}[linenos,tabsize=4]{java}
-% public static int typographie = 0; // Typographie d'affichage
-% public static boolean couleur = false; // Affichage de la couleur
-% public static boolean details = true; // Affichage du details de la solution
-% public static int minimum = 0; // Longueur minimum de la solution
-% public static int largeur = 20; // Largeur du labyrinthe
-% public static int hauteur = 12; // Hauteur du labyrinthe
-% \end{minted}
-% 
 
 
 \end{document}
