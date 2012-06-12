@@ -115,7 +115,7 @@ struct PacketFrag {
     // Nombre de fragment (taille du tableau)
     int size;
     // Tableau contenant les trames
-       Trame ** trames;
+    Trame ** trames;
 };
 typedef struct PacketFrag PacketFrag;
 \end{minted}
@@ -156,7 +156,31 @@ void packet_assemble(Packet * packet, PacketFrag * pf);
 void packet_split(PacketFrag ** pf, Packet * packet, int outputsize);
 \end{minted}
 \subsubsection{commut}
+\texttt{commut} est le module qui gère la table de commutation de notre appareil. Cette dernière est définie ainsi :
+\begin{minted}{c}
+ /* Liste chaîné des règles de commutation */
+struct ListRule {
+    unsigned int inlabel;
+    unsigned int outlabel;
+    int outlink;
+    struct ListRule * next;
+};
 
+typedef struct ListRule ListRule;
+\end{minted}
+Pour charger la table de commutation, nous utiliserons :
+\begin{minted}{c}
+ /* Charger les règles de routage depuis un fichier */
+int commut_load(ListRule ** rules, char * inputfile);
+\end{minted}
+Puis, la fonction :
+\begin{minted}{c}
+ /* Commuter un packet.
+ * Change le label et renvoit le lien de sortie.
+ * Renvoit -1 si le packet n'est concerné par aucune règle. */
+int commut(Packet * packet, ListRule * rules);
+\end{minted}
+Qui elle, renvoie le lien de sortie et modifie le label du paquet.
 \subsubsection{queue}
 \texttt{Queue} est un module gérant les files d'attente ainsi que les 256 priorités. Une queue est une structure comportant un pointeur vers une autre queue comme ci dessous :
 \begin{minted}{c}
@@ -176,10 +200,17 @@ struct WRRS {
 };
 typedef struct WRRS WRRS;
 \end{minted}
-La variable priorité dans le WRRS contient la dernière priorité envoyée pour reprise.
+La variable priorité dans le WRRS contient la dernière priorité envoyée pour reprise. Ce module propose aussi des fonctions permettant d'ajouter une trame en fonction de sa priorité mais aussi d'en sortir une en fonction de la priorité absolue et de la dernière priorité. Ces fonctions sont :
+\begin{minted}{c}
+/* Ajouter une trame dans le serveur */
+void wrrs_push(WRRS * server, unsigned short int priority, Trame * trame);
 
+/* Obtenir la prochaine trame devant sortir du serveur.
+ * Retourne NULL si le server est vide. */
+Trame * wrrs_pop(WRRS * server);
+\end{minted}
 \subsubsection{simulator}
-
+\texttt{simulator} est le module qui appelle tous les autres modules précédemment énoncés. Il est appelé par le main et coordonne toutes les fonctions qui assureront le bon  
 \subsubsection{main}
 
 \section{Réalisation du projet}
@@ -219,7 +250,32 @@ Puis dans la partie queue nous avions envisagé que la queue serait un tableau d
 
 \subsubsection{Difficultés rencontrées}
 
+Comme le calcul de CRC ne contient pas du CRC original suivant de la charge, donc les difficultés concernant cette procédure sont :
 
+1.Comment faire un calcul de CRC en excluant le CRC original.
+
+2.Comment faire un calcul de CRC en cas ayant un CRC comme un banaliseur.
+
+\vspace{0.5cm}
+
+Pour le problème 1 :
+
+selon la formule :
+
+A = A xor B xor B
+
+on sait qu'il suffit de faire une fois ou exclusif avec le CRC original et le CRC calculé incluant CRC original, on peut obtenir un CRC  en excluant le CRC original.
+
+Pour le problème 2 :
+
+Si la CRC reçu est un fanion ou un banaliseur, c'est qu'on a
+ calculé la crc aussi sur le banaliseur qui précédait la crc reçu.
+
+Donc on doit faire encore une fois ou exclusif avec le banaliseur.
+
+
+Comme il n'y pas de mécanisme de gestion d'exception comme JAVA pour langage C, on utilise un type de retour INT pour indiquer l'état d'exécution afin de contrôler les exceptions.
+On a décider un code de retour tel que si 0, ça veut dire qu'il n'y pas d'erreur, -1 sinon.
 
 \subsubsection{Solution retenue}
 
