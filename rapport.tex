@@ -264,13 +264,14 @@ Puis dans la partie queue nous avions envisagé que la queue serait un tableau d
 
 % TODO
 
-\subsubsection{Difficultés rencontrées}
+\subsubsection{Difficultés rencontrées et solution retenue}
 
-Comme le calcul de CRC ne contient pas du CRC original suivant de la charge, donc les difficultés concernant cette procédure sont :
+Comme le calcul de CRC ne tient pas compte du CRC original suivant la charge, donc les difficultés concernant cette procédure sont :
+\begin{enumerate}
+ \item Comment faire un calcul de CRC en excluant le CRC original.
+ \item Comment faire un calcul de CRC en cas ayant une CRC égale à un fanion ou un banaliseur.
+\end{enumerate}
 
-1.Comment faire un calcul de CRC en excluant le CRC original.
-
-2.Comment faire un calcul de CRC en cas ayant un CRC comme un banaliseur.
 
 \vspace{0.5cm}
 
@@ -293,11 +294,11 @@ Donc on doit faire encore une fois ou exclusif avec le banaliseur.
 Comme il n'y pas de mécanisme de gestion d'exception comme JAVA pour langage C, on utilise un type de retour INT pour indiquer l'état d'exécution afin de contrôler les exceptions.
 On a décider un code de retour tel que si 0, ça veut dire qu'il n'y pas d'erreur, -1 sinon.
 
-\subsubsection{Solution retenue}
+\vspace{0.5cm}
 
 Ainsi, partant de la volonté de développer une application efficace, nous avons effectué grand nombre de modifications. La plus significative concernant la structure de donnée qui stocke les trames lorsqu'un paquet n'est pas encore complet. En effet, nous sommes passés d'une liste de liste à une liste de tableau.
 
-Un second regard nous a permis de réaliser que lorsque l'on recevait une trame, on savait directement le nombre de trame que l'on recevrait grâce à l’attribut nbf. Ainsi il semblait bien plus simple d'allouer directement un tableau de la bonne taille et ranger les trames dans le bon ordre.
+Un second regard nous a permis de réaliser que lorsque l'on recevait une trame, on savait directement le nombre de trame que l'on recevrait grâce à l'attribut nbf. Ainsi il semblait bien plus simple d'allouer directement un tableau de la bonne taille et ranger les trames dans le bon ordre.
 
 \section{Conclusion}
 
@@ -305,18 +306,17 @@ Pour mener à bien ce projet de première année, nous avons dû approfondir nos
 
 De plus, ce projet nous a permis de nous familiariser avec la démarche de création d’un programme complexe ainsi  que des notions vues en réseaux. En effet, nous avons développé cette application par un travail de groupe, ce qui nous attend en tant que futurs ingénieurs. Plusieurs personnes travaillant sur un même programme ont besoin d'énormément de coordination et de synchronisation. Cela s'est révélé bien plus difficile que prévu, outre la standardisation de nos variables et la répartition des modules.
 
-La partie que nous avons développée correspond aux objectifs de départ. Les résultats de simulation sont tout à fait satisfaisants tant au niveau routage qu’au niveau gestion de la mémoire. Savoir faire des simulation et le faire tout le long du projet est un outil précieux afin de corriger les erreurs le plus vite possible avant que celles-ci ne se répercutent sur la suite.
+La partie que nous avons développée correspond aux objectifs de départ. Les résultats de simulation sont tout à fait satisfaisants tant au niveau routage qu'au niveau gestion de la mémoire. Savoir faire des simulation et le faire tout le long du projet est un outil précieux afin de corriger les erreurs le plus vite possible avant que celles-ci ne se répercutent sur la suite.
 
 Le projet que nous avons réalisé cette année peut encore évoluer.
-En effet, la gestion des trames perdu ou erroné est très limité.
+En effet, la gestion des trames perdues ou erronées est très limitée.
 Il pourrait être envisagé d'étendre le protocole afin de permettre de la
-reprise sur erreur. Par exemple, nous pourrions rajouter un compte à
-rebours qui détruit la trame si aucune autre trame du même paquet 
-n'arrive dans un délai impartit. Ceci permet de recevoir un paquet de
+reprise sur erreur. Par exemple, nous pourrions une fonctionnalité qui détruirait la trame si aucune autre trame du même paquet 
+n'arrive dans un délai imparti. Ceci permet de recevoir un paquet de
 même ID qui arriverait plus tard. Une autre voie d'évolution est la
-gestion de plusieurs liens entrant, avec éventuellement une table de
-commutation qui en tient compte. Il serait également intéressant de
-passer à une version asynchrone permettant la reception et l'émission de
+gestion de plusieurs liens entrants, avec éventuellement une table de
+commutation qui en tiendrait compte. Il serait également intéressant de
+passer à une version asynchrone permettant la réception et l'émission de
 trame simultanément.
 
 \end{document}
