@@ -37,7 +37,11 @@ Jiajun \textsc{Shi}, Émilie \textsc{Abia}\\Groupe 15}
 
 \begin{abstract}
 
-Ce rapport porte sur un projet de programmation d'un commutateur de niveau 3 en langage C. Il y est abordé le fonctionnement global du programme, suivi des choix techniques effectués afin de palier aux problèmes rencontrés. Il termine par une conclusion sur l'état du projet et des améliorations qui pourraient y être apportées.
+Ce rapport porte sur un projet de programmation d'un commutateur de
+niveau 3 en langage C. Il y est abordé le fonctionnement global du
+programme, suivi des choix techniques effectués afin de palier aux
+problèmes rencontrés. Il termine par une conclusion sur l'état du projet
+et des améliorations qui pourraient y être apportées.
 
 \end{abstract}
 
@@ -48,53 +52,110 @@ Ce rapport porte sur un projet de programmation d'un commutateur de niveau 3 en 
 \section{Introduction}
 \subsection{Préface}
 
-Dans le cadre de notre préparation au diplôme d'ingénieur en Télécommunications et Réseaux, nous avons été amenés à effectuer notre projet de première année sous l'encadrement de Jérôme Ermont. Le but de ce projet était surtout de nous faire manipuler le langage C et la gestion de la mémoire mais il nous a également permis de modéliser une solution réseau simple.
+Dans le cadre de notre préparation au diplôme d'ingénieur en
+Télécommunications et Réseaux, nous avons été amenés à effectuer notre
+projet de première année sous l'encadrement de Jérôme Ermont. Le but de
+ce projet était surtout de nous faire manipuler le langage C et la
+gestion de la mémoire mais il nous a également permis de modéliser une
+solution réseau simple.
 
-La commutation de paquets, technique utilisée dans le transfert de données dans les réseaux informatiques, permet de rediriger les packets sur un lien physique particulier suivant des critères précis, avec éventuellement une modification de ceux-ci. Au vue de notre formation, le choix de la réalisation d'un simulateur de commutateur se trouve être pertinent et intéressant.
+La commutation de paquets, technique utilisée dans le transfert de
+données dans les réseaux informatiques, permet de rediriger les packets
+sur un lien physique particulier suivant des critères précis, avec
+éventuellement une modification de ceux-ci. Au vue de notre formation,
+le choix de la réalisation d'un simulateur de commutateur se trouve être
+pertinent et intéressant.
 
-Ce rapport est composé de deux parties. La première partie présente l'application dans sa globalité, son fonctionnement. La seconde partie est consacrée au détail de l'implémentation. Enfin nous conclurons sur les apports personnels obtenus à la fin de ce projet.
+Ce rapport est composé de deux parties. La première partie présente
+l'application dans sa globalité, son fonctionnement. La seconde partie
+est consacrée au détail de l'implémentation. Enfin nous conclurons sur
+les apports personnels obtenus à la fin de ce projet.
 
 \subsection{Rappel du sujet}
 
-Nous avons effectué notre projet langage C de première année sous l'encadrement de Jérôme Ermont. Il était question principalement de simuler le fonctionnement d'un commutateur de niveau 3. 
+Nous avons effectué notre projet langage C de première année sous
+l'encadrement de Jérôme Ermont. Il était question principalement de
+simuler le fonctionnement d'un commutateur de niveau 3. 
 
-Ainsi il s'agissait dans ce projet de simuler le travail d'un élément réseau dont le rôle serait de recevoir des trames, de les assembler pour reformer des paquets et d'effectuer par la suite la commutation de ces paquets. Les paquets routés sont à nouveau fragmentés et les trames obtenues sont stockées dans des queues selon leur priorité.
+Ainsi il s'agissait dans ce projet de simuler le travail d'un élément
+réseau dont le rôle serait de recevoir des trames, de les assembler pour
+reformer des paquets et d'effectuer par la suite la commutation de ces
+paquets. Les paquets routés sont à nouveau fragmentés et les trames
+obtenues sont stockées dans des queues selon leur priorité.
 
-La première étape a été l'étude préalable de l'élément réseau impliqué, il s'agissait d'assimiler les fonctionnalités attendues de celui-ci et de, relativement à notre compréhension du sujet, réfléchir à un algorithme.
+La première étape a été l'étude préalable de l'élément réseau impliqué,
+il s'agissait d'assimiler les fonctionnalités attendues de celui-ci et
+de, relativement à notre compréhension du sujet, réfléchir à un
+algorithme.
 
-Dans un second temps, après nous être mis d'accord sur le modèle retenu nous nous sommes départagé le travail afin de gagner du temps.  
+Dans un second temps, après nous être mis d'accord sur le modèle retenu
+nous nous sommes départagé le travail afin de gagner du temps.  
 
-Nous avons ensuite regroupé notre travail et avons modifié la structure générale afin de l'optimiser au maximum. 
+Nous avons ensuite regroupé notre travail et avons modifié la structure
+générale afin de l'optimiser au maximum. 
 
-Enfin, il faut remarquer que notre application est vouée à évoluer : il serait par exemple souhaitable que le commutateur soit capable de mieux traiter les erreur (reprise sur erreur, renvoie...)
+Enfin, il faut remarquer que notre application est vouée à évoluer : il
+serait par exemple souhaitable que le commutateur soit capable de mieux
+traiter les erreur (reprise sur erreur, renvoie...).
 
 \section{Implémentation}
 \subsection{Architecture globale de l'application}
 
-Notre application ayant attrait au réseau, il est naturel de la décomposer en module indépendant à l'image des couches du modèle OSI. De plus, une telle décomposition rend notre solution évolutive. Il sera aisé de remplacer un module ou d'en ajouter. Sa décomposition en module assure aussi sa stabilité.
+Notre application ayant attrait au réseau, il est naturel de la
+décomposer en module indépendant à l'image des couches du modèle OSI. De
+plus, une telle décomposition rend notre solution évolutive. Il sera
+aisé de remplacer un module ou d'en ajouter. Sa décomposition en module
+assure aussi sa stabilité.
 
-Le simulateur est lancé par la méthode \texttt{simulate} du module \texttt{simulator}. Les paramètres de lancement sont obtenue par le module \texttt{main}, en charge d'analyser les arguments de la ligne de commande. La simulation est commandé par le fichier d'entrée, comportant des instructions \texttt{IN} et des instruction \texttt{out}, dictant l'entrée ou la sortie d'un packet.
+Le simulateur est lancé par la méthode \texttt{simulate} du module
+\texttt{simulator}. Les paramètres de lancement sont obtenue par le
+module \texttt{main}, en charge d'analyser les arguments de la ligne de
+commande. La simulation est commandé par le fichier d'entrée, comportant
+des instructions \texttt{IN} et des instruction \texttt{out}, dictant
+l'entrée ou la sortie d'un packet.
 
-Lors de la lecture d'une instruction \texttt{IN}, le module \texttt{trame} sera appelé afin de lire une trame depuis le fichier d'entrée. Celle-ci est alors rangée dans une structure de données nommé \texttt{ListPacketFrag}, en attandant d'obtenir toute les trames d'un même paquet. C'est donc une liste chaîné, contenant dans chaque cellule un \texttt{PacketFrag} – paquet fragmenté – contenant un tableau de trame, remplit au fur et à mesure de leur arrivée. Lorsque toute les trames d'un même paquet sons reçu, le paquet fragmenté est retiré de la liste \texttt{ListPacketFrag}, afin d'être envoyé au module \texttt{packet}, en charge de l'assemblage. Le schéma ci-après résume le stockage des données dans les différentes structures.
+Lors de la lecture d'une instruction \texttt{IN}, le module
+\texttt{trame} sera appelé afin de lire une trame depuis le fichier
+d'entrée. Celle-ci est alors rangée dans une structure de données
+nommé \texttt{ListPacketFrag}, en attandant d'obtenir toute les trames
+d'un même paquet. C'est donc une liste chaîné, contenant dans chaque
+cellule un \texttt{PacketFrag} – paquet fragmenté – contenant un tableau
+de trame, remplit au fur et à mesure de leur arrivée. Lorsque toute les
+trames d'un même paquet sons reçu, le paquet fragmenté est retiré de la
+liste \texttt{ListPacketFrag}, afin d'être envoyé au module
+\texttt{packet}, en charge de l'assemblage. Le schéma ci-après résume
+le stockage des données dans les différentes structures.
 
 \includegraphics{s1.png}
 
-Un paquet étant reconstitué, celui-ci est envoyé au module \texttt{commut}, en charge de sa commutation. Celui-ci modifie son label en concordance avec la table de commutation, et indique au simulateur le lien de sortie. Celui-ci va alors demander au module \texttt{packet} de le fragmenter, avant de l'envoyer dans la \texttt{queue} dédié au lien de sortie précédement établit.
+Un paquet étant reconstitué, celui-ci est envoyé au module
+\texttt{commut}, en charge de sa commutation. Celui-ci modifie son label
+en concordance avec la table de commutation, et indique au simulateur le
+lien de sortie. Celui-ci va alors demander au module \texttt{packet} de
+le fragmenter, avant de l'envoyer dans la \texttt{queue} dédié au lien
+de sortie précédement établit.
 
-Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d'envoyer une trame sur le lien de sortie concernée et donc de l'écrire dans un fichier de sortie. La trame sortie est sélectionnée selon sa priorité de manière circulaire sauf la priorité absolue, qui elle, est envoyée immédiatement après un \texttt{OUT}.
+Lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé
+afin d'envoyer une trame sur le lien de sortie concernée et donc de
+l'écrire dans un fichier de sortie. La trame sortie est sélectionnée
+selon sa priorité de manière circulaire sauf la priorité absolue, qui
+elle, est envoyée immédiatement après un \texttt{OUT}.
 
-Le diagramme UML page suivante résume les différents modules utilisés dans l'application ainsi que les relations qui les lie.
+Le diagramme UML page suivante résume les différents modules utilisés
+dans l'application ainsi que les relations qui les lie.
 
 \includegraphics[height=27cm]{UML.jpg}
 
 \subsection{Détail des modules}
 
 \subsubsection{trame}
-Le module \texttt{trame} propose une fonction de décodage dont le prototype est le suivant :
+Le module \texttt{trame} propose une fonction de décodage dont le
+prototype est le suivant :
 \begin{minted}{c}
 int trame_decode(Trame * t, FILE * stream);
 \end{minted}
-Son objectif est le décodage d'une trame depuis le fichier \texttt{stream} afin de remplir la structure suivante :
+Son objectif est le décodage d'une trame depuis le fichier
+\texttt{stream} afin de remplir la structure suivante :
 \begin{minted}[linenos]{c}
 typedef struct {
     unsigned short int id; /* numéro du paquet */
@@ -189,7 +250,8 @@ void lpf_del(ListPacketFrag ** lpf, ListPacketFrag * cellule);
 
 
 \subsubsection{packet}
-\texttt{Packet} est un module contenant la structure qui représentera à nos yeux une trame définie comme ci dessous:
+\texttt{Packet} est un module contenant la structure qui représentera à
+nos yeux une trame définie comme ci dessous:
 \begin{minted}[linenos,tabsize=4]{c}
  struct Packet {
   unsigned int label;
@@ -199,7 +261,8 @@ void lpf_del(ListPacketFrag ** lpf, ListPacketFrag * cellule);
 };
 typedef struct Packet Packet;
 \end{minted}
-Ce modules est aussi chargé de l'assemblage et de la re-fragmentation du paquet en de multiple trames via les deux fonctions qui suivent :
+Ce modules est aussi chargé de l'assemblage et de la re-fragmentation du
+paquet en de multiple trames via les deux fonctions qui suivent :
 \begin{minted}[linenos,tabsize=4]{c}
 /* Assembler un packet */
 void packet_assemble(Packet * packet, PacketFrag * pf);
@@ -211,7 +274,8 @@ void packet_split(PacketFrag ** pf, Packet * packet, int outputsize);
 
 
 \subsubsection{commut}
-\texttt{commut} est le module qui gère la table de commutation de notre appareil. Cette dernière est définie ainsi :
+\texttt{commut} est le module qui gère la table de commutation de notre
+appareil. Cette dernière est définie ainsi :
 \begin{minted}{c}
  /* Liste chaîné des règles de commutation */
 struct ListRule {
@@ -256,7 +320,8 @@ Ce tableau est contenu dans une structure WRRS ci dessous :
 \begin{minted}{c}
  /* Weighted Rount Robin Server */
 struct WRRS {
-    Queue * queue[NBPRIORITY]; // Tableau des queues de trame (une par priorité)
+    Queue * queue[NBPRIORITY]; // Tableau des queues de trame (une par
+    priorité)
     int priority; // Priorité en cours
     int credit; // Nombre de crédit pour la priorité en cours
 };
@@ -279,10 +344,33 @@ Trame * wrrs_pop(WRRS * server);
 \end{minted}
 
 \subsubsection{main}
-Le \texttt{main} se contente de gérer les erreur et surtout de récupérer les arguments. Après avoir vérifié que les arguments sont correctes, ils les fait passer au module principal qui est \texttt{simulator}. Il vérifie aussi la validité des données.
+La méthode \texttt{main} se contente de récupérer les arguments. Après
+avoir vérifié leurs validité, ils les fait passer au module
+\texttt{simulator} pour lancer la simulation. Il vérifie également la
+validité des paramètres, comme une  aussi la validité des données.
 
 \subsubsection{simulator}
-\texttt{simulator} est le module qui appelle tous les autres modules précédemment énoncés. Il est appelé par le main et coordonne toutes les fonctions qui assureront le bon fonctionnement de notre commutateur de niveau 3. C'est lui qui ouvre et lit le fichier d'entrée et qui ouvre le fichier de sortie.
+\texttt{simulator} est le coordinateur des autres modules
+précédemment énoncés. Il est appelé par la méthode \texttt{main} et
+s'occupe de l'ouverture des différents fichier. Il s'occupe également de
+charger la table de commutation par le biais du module \texttt{commut}.
+Tous comme \texttt{trame\_decode}, il implémente une machine à état pour
+la lecture du fichier d'entrée. Deux sous-programme, \texttt{in} et
+\texttt{out} s'occupent des actions a effectuer à la lecture de « IN »
+ou de « OUT ».
+
+La fonction \texttt{in} va tous d'abord décoder une trame avant de
+l'envoyer dans la structure de stoquage temporaire en attendant
+l'assemblage. S'il s'agit de la dernière trame manquante d'un paquet,
+les trames associées sont retiré de la liste pour être assemblé. Le
+paquet est ensuite commuté, fragmenté, et envoyé dans la file d'attente
+associé à son lien de sortie.
+
+La fonction \texttt{out} appelle la fonction \texttt{wrrs\_push} sur la
+file d'attente associé au lien de sortie demandé. La trame ainsi
+récupéré est écrite dans le bon fichier par le biais de 
+\texttt{trame\_encode}.
+
 
 
 \section{Réalisation du projet}
