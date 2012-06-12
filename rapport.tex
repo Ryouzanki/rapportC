@@ -49,19 +49,17 @@ Ce rapport porte sur un projet de programmation d'un commutateur de niveau 3 en 
 
 Dans le cadre de notre préparation au diplôme d'ingénieur en Télécommunications et Réseaux, nous avons été amenés à effectuer notre projet de première année sous l'encadrement de Jérôme Ermont. Le but de ce projet était surtout de nous faire manipuler le langage C et la gestion de la mémoire mais il nous a également permis de modéliser une solution réseau simple.
 
-La commutation de paquets, technique utilisée dans le transfert de données dans les réseaux informatiques, permet de rediriger les packets sur un lien physique particulier suivant des critères précis, avec éventuellement une modification de ceux-ci. Au vue de notre formation, le choix de la réalisation d'un simulateur de commutateur se trouve être pertinant et intéressant.
+La commutation de paquets, technique utilisée dans le transfert de données dans les réseaux informatiques, permet de rediriger les packets sur un lien physique particulier suivant des critères précis, avec éventuellement une modification de ceux-ci. Au vue de notre formation, le choix de la réalisation d'un simulateur de commutateur se trouve être pertinent et intéressant.
 
-FIXME
-Ce rapport est composé de trois parties. La première partie présente l'application exécutable dans sa globalité, son fonctionnement. La seconde partie est consacrée au détail de l'implémentation. Enfin la troisième partie détaille la façon dont notre programme a été mis en œuvre.
-FIXME // une fois qu'on aura un vrai plan.
+Ce rapport est composé de deux parties. La première partie présente l'application dans sa globalité, son fonctionnement. La seconde partie est consacrée au détail de l'implémentation. Enfin nous conclurons sur les apports personnels obtenus à la fin de ce projet.
 
 \subsection{Rappel du sujet}
 
-Nous avons effectué notre projet langage C de première année sous l'encadrement de Jérôme Ermont. Il était question principalement de simuler le travail d'un commutateur de niveau 3. 
+Nous avons effectué notre projet langage C de première année sous l'encadrement de Jérôme Ermont. Il était question principalement de simuler le fonctionnement d'un commutateur de niveau 3. 
 
-Ainsi il s'agissait dans ce projet de simuler le travail d'un élément réseau fictif dont le rôle serait de recevoir des trames, de les assembler pour former des paquets et d'effectuer par la suite la commutation de ces paquets. Il serait chargé ensuite d'envoyer les paquets routés à un élément en charge de la fragmentation et de l'ordonnancement des trames.
+Ainsi il s'agissait dans ce projet de simuler le travail d'un élément réseau dont le rôle serait de recevoir des trames, de les assembler pour reformer des paquets et d'effectuer par la suite la commutation de ces paquets. Les paquets routés sont à nouveau fragmentés et les trames obtenues sont stockées dans des queues selon leur priorité.
 
-La première étape a été l'étude préalable de l'élément réseau imaginaire, il s'agissait d'assimiler les fonctionnalités attendues de celui-ci et de, relativement à notre compréhension du sujet, réfléchir à un algorithme.
+La première étape a été l'étude préalable de l'élément réseau impliqué, il s'agissait d'assimiler les fonctionnalités attendues de celui-ci et de, relativement à notre compréhension du sujet, réfléchir à un algorithme.
 
 Dans un second temps, après nous être mis d'accord sur le modèle retenu nous nous sommes départagé le travail afin de gagner du temps.  
 
