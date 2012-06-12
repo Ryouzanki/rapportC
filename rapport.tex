@@ -136,8 +136,25 @@ typedef struct ListPacketFrag ListPacketFrag;
 \end{minted}
 \texttt{listepacketfrag} contient l'ID du paquet associé afin de savoir si une trame appartient au paquet concerné ou non. Elle contient aussi un compteur qui permet de savoir si le paquet est complet dans la mesure où toutes les trames attendues sont arrivées.
 \subsubsection{packet}
+\texttt{Packet} est un module contenant la structure qui représentera à nos yeux une trame définie comme ci dessous:
+\begin{minted}[linenos,tabsize=4]{c}
+ struct Packet {
+  unsigned int label;
+  unsigned char priority;
+  unsigned int size;
+  unsigned char * charge;
+};
 
+typedef struct Packet Packet;
+\end{minted}
+Ce modules est aussi chargé de l'assemblage et de la re-fragmentation du paquet en de multiple trames via les deux fonctions qui suivent :
+\begin{minted}[linenos,tabsize=4]{c}
+/* Assembler un packet */
+void packet_assemble(Packet * packet, PacketFrag * pf);
 
+/* Fragmenter un packet */
+void packet_split(PacketFrag ** pf, Packet * packet, int outputsize);
+\end{minted}
 \subsubsection{commut}
 
 \subsubsection{queue}
