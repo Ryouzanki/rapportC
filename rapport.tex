@@ -53,7 +53,7 @@ La commutation de paquets, technique utilisée dans le transfert de données dan
 
 FIXME
 Ce rapport est composé de trois parties. La première partie présente l'application exécutable dans sa globalité, son fonctionnement. La seconde partie est consacrée au détail de l'implémentation. Enfin la troisième partie détaille la façon dont notre programme a été mis en œuvre.
-FIXME // une fois qu'on aura un vrai plan
+FIXME // une fois qu'on aura un vrai plan.
 
 \subsection{Rappel du sujet}
 
@@ -70,9 +70,15 @@ Nous avons ensuite regroupé notre travail et avons modifié la structure géné
 Enfin, il faut remarquer que notre application est vouée à évoluer : il serait par exemple souhaitable que le commutateur soit capable de mieux traiter les erreur (reprise sur erreur, renvoie...)
 
 \section{Implémentation}
-\subsection{Architecture de l'application en module}
+\subsection{Architecture globale de l'application}
 
 A la vue des fonctionnalités énoncées ci-dessus, notre solution a été conçue pour être évolutive (car décomposée en modules distinct) et stable. L'application exécutable se décompose en modules fonctionnels explicités par le schéma ci-dessous :
+
+Notre application ayant attrait au réseau, il est naturel de la décomposer en module indépendant à l'image des couches du modèle OSI.
+
+Le simulateur est lancé par la méthode \texttt{simulate} du module \texttt{simulator}. Les paramètres de lancement sont obtenue par le module \texttt{main}, en charge d'analyser les arguments de la ligne de commande. La simulation est commandé par le fichier d'entrée, comportant des instructions \texttt{IN} et des instruction \texttt{out}, dictant l'entrée ou la sortie d'un packet.
+
+Lors de la lecture d'une instruction \texttt{IN}, le module \texttt{trame} sera appelé afin de lire une trame depuis le fichier d'entrée. Celle-ci est alors rangée dans une structure de données nommé \texttt{ListPacketFrag}, en attandant d'obtenir toute les trames d'un même packet.
 
 \includegraphics{s1.png}
 
