@@ -2,3 +2,5 @@
 *.pyg
 *.toc
 *.aux
+*.pyg
+*.pdf

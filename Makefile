@@ -7,3 +7,5 @@ rapport.pdf: rapport.tex
 
 open: rapport.pdf
 	@evince rapport.pdf >/dev/null 2>&1 &
+
+.PHONY: rapport.pdf
