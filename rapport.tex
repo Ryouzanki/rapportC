@@ -110,7 +110,15 @@ Le décodage se fait en telles étapes :
  \item Faire la comparaison entre le crc calculé et le crc original, s'ils sont identiques, la trame est reçue correctement, sinon, on ignore cette trame et elle est détruite.
 \end{enumerate}
 \subsubsection{packetfrag}
-
+\texttt{packetfrag} correspond à un module gérant les fragments de paquets, ou les trames d'un même paquet. Un packetfrag contient, comme ci dessous, une trame ainsi que la taille du paquet auquel elle appartient :\begin{minted}{c}
+struct PacketFrag {
+    // Nombre de fragment (taille du tableau)
+    int size;
+    // Tableau contenant les trames
+	Trame ** trames;
+};
+typedef struct PacketFrag PacketFrag;
+\end{minted}
 \subsubsection{listpacketfrag}
 
 \subsubsection{packet}
