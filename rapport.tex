@@ -74,11 +74,13 @@ Notre application ayant attrait au réseau, il est naturel de la décomposer en 
 
 Le simulateur est lancé par la méthode \texttt{simulate} du module \texttt{simulator}. Les paramètres de lancement sont obtenue par le module \texttt{main}, en charge d'analyser les arguments de la ligne de commande. La simulation est commandé par le fichier d'entrée, comportant des instructions \texttt{IN} et des instruction \texttt{out}, dictant l'entrée ou la sortie d'un packet.
 
-Lors de la lecture d'une instruction \texttt{IN}, le module \texttt{trame} sera appelé afin de lire une trame depuis le fichier d'entrée. Celle-ci est alors rangée dans une structure de données nommé \texttt{ListPacketFrag}, en attendant d'obtenir toute les trames d'un même packet.
+Lors de la lecture d'une instruction \texttt{IN}, le module \texttt{trame} sera appelé afin de lire une trame depuis le fichier d'entrée. Celle-ci est alors rangée dans une structure de données nommé \texttt{ListPacketFrag}, en attandant d'obtenir toute les trames d'un même paquet. C'est donc une liste chaîné, contenant dans chaque cellule un \texttt{PacketFrag} – paquet fragmenté – contenant un tableau de trame, remplit au fur et à mesure de leur arrivée. Lorsque toute les trames d'un même paquet sons reçu, le paquet fragmenté est retiré de la liste \text{ListPacketFrag}, afin d'être envoyé au module \texttt{packet}, en charge de l'assemblage. Le schéma ci-après résume le stockage des données dans les différentes structures. 
 
 Ensuite, lors d'une instruction \texttt{OUT}, le module \texttt{queue} est appelé afin d'envoyer une trame sur le lien de sortie concernée et donc de l'écrire dans un fichier de sortie. La trame sortie est sélectionnée selon sa priorité de manière circulaire sauf la priorité absolue, qui elle, est envoyée immédiatement après un \texttt{OUT}.
 
 \includegraphics{s1.png}
+
+Un paquet étant reconstitué, celui-ci est envoyé au module \texttt{commut}, en charge de sa commutation. Celui-ci modifie son label en concordance avec la table de commutation, et indique au simulateur le lien de sortie. Celui-ci va alors envoyer 
 
 \subsection{Détail des types et sous programmes}
 
