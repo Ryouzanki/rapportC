@@ -16,7 +16,8 @@
    \begin{center}{\Large Plan }\end{center}
    %%% affiche en début de chaque section, les noms de sections et
    %%% noms de sous-sections de la section en cours.
-   \tableofcontents[currentsection,hideothersubsections]
+   %\tableofcontents[currentsection,hideothersubsections]
+   \tableofcontents[currentsection,hideallsubsections]
    \end{frame} 
 }
 
@@ -49,6 +50,21 @@
   \lstinputlisting[texcl=true]{#1}
   }
 
+
+\newenvironment{changemargin}[2]{%
+ \begin{list}{}{%
+ \setlength{\topsep}{0pt}%
+ \setlength{\leftmargin}{#1}%
+ \setlength{\rightmargin}{#2}%
+ \setlength{\listparindent}{\parindent}%
+ \setlength{\itemindent}{\parindent}%
+ \setlength{\parsep}{\parskip}%
+ }%
+ \item[]}{\end{list}}
+
+
+  %\usepackage{test}
+
 \begin{document}
 
 \begin{frame}
@@ -63,13 +79,19 @@
 
 \section{Architecture du programme}
 
-\begin{frame}
+\begin{frame}[plain]
 %\begin{center}
-\hspace{-1cm}\includegraphics[scale=0.28]{UML2.jpg}
+%\hspace{-1cm}\includegraphics[scale=0.28]{UML2.jpg}
+%\maxFrameImage{UML2.jpg}
 %\end{center}
+    \begin{changemargin}{-1cm}{-1cm}
+        \begin{center}
+            \includegraphics[width=\paperwidth,height=\paperheight,keepaspectratio]{UML2.jpg}
+        \end{center}
+    \end{changemargin}
 \end{frame}
 
-\frame{\center{\hspace{1.6cm}\includegraphics[scale=0.7]{s2.png}}}
+\frame{\center{\hspace{1.6cm}\includegraphics[scale=0.6]{s2.png}}}
 
 \section{Implémentation}
 
@@ -99,15 +121,37 @@
 
 \frame{\FSource{sources/queue.h}}
 
-\subsection{Main}
+%\subsection{Main}
 
-\frame{\FSource{sources/main.c}}
+%\frame{\FSource{sources/main.c}}
 
 \subsection{Simulator}
 
 \frame{\FSource{sources/simulator.c}}
 \frame{\FSource{sources/in.c}}
 \frame{\FSource{sources/out.c}}
+
+\section{Difficultées et améliorations}
+
+\subsection{Difficultées}
+
+\begin{frame}
+    \begin{itemize}
+        \item Lecture et « décodage à la volé » des trames
+        \item Liste de liste de trame
+        \item Ignorer les paquets dont la première trame reçu est erronée
+        \item Calcul de la CRC
+    \end{itemize}
+\end{frame}
+
+\subsection{Améliorations}
+
+\begin{frame}
+    \begin{itemize}
+        \item Gestion des erreurs
+        \item Asynchronisation des entrées/sorties
+    \end{itemize}
+\end{frame}
 
 \section{Conclusion}
 
