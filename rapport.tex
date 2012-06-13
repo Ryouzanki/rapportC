@@ -379,6 +379,11 @@ différents appels de la fonction lorsqu'un lien est solicité.
 \begin{minted}{c}
 static FILE ** streams = NULL; // Fichiers de sortie
 if (streams == NULL) { calloc(linknum, sizeof(*streams)); }
+if (streams[link] == NULL) { // Le fichier n'a pas encore été ouvert
+    sprintf(filename, "%s-%d", prefix, link);
+    streams[link] = fopen(filename, "a");
+}
+trame_encode(streams[link], t);
 \end{minted}
 
 
