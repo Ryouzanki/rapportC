@@ -352,7 +352,7 @@ validité des paramètres, comme une  aussi la validité des données.
 \subsubsection{simulator}
 \texttt{simulator} est le coordinateur des autres modules
 précédemment énoncés. Il est appelé par la méthode \texttt{main} et
-s'occupe de l'ouverture des différents fichiers. Il s'occupe également de
+s'occupe du fichier d'entré. Il s'occupe également de
 charger la table de commutation par le biais du module \texttt{commut}.
 Tout comme \texttt{trame\_decode}, il implémente une machine à état pour
 la lecture du fichier d'entrée. Deux sous-programme, \texttt{in} et
@@ -369,7 +369,17 @@ associé à son lien de sortie.
 La fonction \texttt{out} appelle la fonction \texttt{wrrs\_push} sur la
 file d'attente associée au lien de sortie demandé. La trame ainsi
 récupérée est écrite dans le bon fichier par le biais de 
-\texttt{trame\_encode}.
+\texttt{trame\_encode}. Afin de n'ouvrir que les fichiers nécessaire, et
+de ne pas devoir les ré-ouvrir à chaque écriture d'une trame sur un même
+lien de sortie, un tableau static est utilisé. Celui-ci comporte une
+cellule par lien de sortie, contenant un pointeur de type \texttt{FILE *}
+sur le fichier en question. Au premier appel de la fonction, les pointeurs
+sont \texttt{NULL}, et ils sont initialiser au fur et à mesure des
+différents appels de la fonction lorsqu'un lien est solicité.
+\begin{minted}{c}
+static FILE ** streams = NULL; // Fichiers de sortie
+if (streams == NULL) { calloc(linknum, sizeof(*streams)); }
+\end{minted}
 
 
 
